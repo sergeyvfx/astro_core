@@ -1,0 +1,5 @@
+Project: tiny_lib
+URL: https://github.com/sergeyvfx/tiny_lib
+License: MIT-0
+Upstream version: 7e686bb087e
+Local modifications: None

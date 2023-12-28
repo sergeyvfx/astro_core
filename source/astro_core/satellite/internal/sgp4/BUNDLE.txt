@@ -1,0 +1,11 @@
+Project: SGP4
+URL: https://celestrak.org/software/vallado-sw.php
+License: N/A https://celestrak.org/publications/AIAA/2006-6753/faq.php
+Upstream version: 12 mar 20
+Local modifications:
+
+- Remove ifdef-style header guard.
+- Converted SGP4Version to an inlined constant.
+- Wrapped code into the  astro_core::sgp_internal namespace
+- Removed include statements from the SGP4.h
+- Fixed ASAN overlapped copy warning in strcpy() used in sgp4init().
