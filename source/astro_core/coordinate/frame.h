@@ -32,11 +32,22 @@ class PositionFrame {
   // a zero vector. Time is initialized to a zero point in an unspecified scale.
   PositionFrame() = default;
 
-  // Copy constructor.
+  // Redefine copy and move construction ans assignments in a way that only
+  // data is copied, but not the view. The view always points to the data of
+  // its owner object.
   PositionFrame(const PositionFrame& other)
-      : observation_time(other.observation_time), position_(other.position_) {
-    // NOTE: Only copy data, not the view which is a pointer to a field in this
-    // object.
+      : observation_time(other.observation_time), position_(other.position_) {}
+  PositionFrame(PositionFrame&& other) noexcept
+      : observation_time(other.observation_time), position_(other.position_) {}
+  auto operator=(const PositionFrame& other) -> PositionFrame& {
+    observation_time = other.observation_time;
+    position_ = other.position_;
+    return *this;
+  }
+  auto operator=(PositionFrame&& other) -> PositionFrame& {
+    observation_time = other.observation_time;
+    position_ = other.position_;
+    return *this;
   }
 
   // Initialization from the given parameters.
@@ -99,11 +110,22 @@ class PositionVelocityFrame : public PositionFrame<Representation> {
   // unspecified scale.
   PositionVelocityFrame() = default;
 
-  // Copy constructor.
+  // Redefine copy and move construction ans assignments in a way that only
+  // data is copied, but not the view. The view always points to the data of
+  // its owner object.
   PositionVelocityFrame(const PositionVelocityFrame& other)
-      : BaseClass(other), velocity_(other.velocity_) {
-    // NOTE: Only copy data, not the view which is a pointer to a field in this
-    // object.
+      : BaseClass(other), velocity_(other.velocity_) {}
+  PositionVelocityFrame(PositionVelocityFrame&& other) noexcept
+      : BaseClass(other), velocity_(other.velocity_) {}
+  auto operator=(const PositionVelocityFrame& other) -> PositionVelocityFrame& {
+    BaseClass::operator=(other);
+    velocity_ = other.velocity_;
+    return *this;
+  }
+  auto operator=(PositionVelocityFrame&& other) -> PositionVelocityFrame& {
+    BaseClass::operator=(other);
+    velocity_ = other.velocity_;
+    return *this;
   }
 
   // Initialization from the given parameters.
