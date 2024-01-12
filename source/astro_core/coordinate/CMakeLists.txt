@@ -74,6 +74,8 @@ endfunction()
 astro_core_coordinate_test(cartesian)
 astro_core_coordinate_test(spherical)
 
+astro_core_coordinate_test(frame)
+
 astro_core_coordinate_test(gcrf)
 astro_core_coordinate_test(geodetic)
 astro_core_coordinate_test(geographic)
