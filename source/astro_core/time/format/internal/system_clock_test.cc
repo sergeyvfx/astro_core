@@ -21,7 +21,7 @@ TEST(SystemClock, Construct) {
     const TimePoint time_point = TimePointFromUnixTime(1234);
 
     const SystemClock system_clock(time_point);
-    EXPECT_EQ(TimePoint(system_clock), time_point);
+    EXPECT_TRUE(TimePoint(system_clock) == time_point);
   }
 }
 
