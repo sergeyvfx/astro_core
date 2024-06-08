@@ -104,8 +104,6 @@ class CountingAllocator {
   }
 };
 
-}  // namespace
-
 TEST(PagedTable, BasicConstruction) {
   static int num_row_destructors_called{0};
 
@@ -264,7 +262,11 @@ TEST(PagedTable, erase) {
     table.push_back("bar");
     table.push_back("baz");
 
-    EXPECT_TRUE(table.erase(table.begin() + 2) == table.end());
+    // Store the result of erase() and compare it with an updated end().
+    // Without this temporary variable the order of evaluation might not be the
+    // same between different compilers.
+    auto it = table.erase(table.begin() + 2);
+    EXPECT_TRUE(it == table.end());
 
     EXPECT_THAT(table, ElementsAre("foo", "bar"));
   }
@@ -455,6 +457,8 @@ TEST(PagedTable, Clear) {
 
 // Avoid accident of a reference test committed.
 TEST(PagedTable, IsReal) { EXPECT_EQ(USE_STD_VECTOR_REFERENCE, 0); }
+
+}  // namespace
 
 }  // namespace experimental
 
