@@ -3,6 +3,9 @@
 // The table is obtained from the IERS Conventions Centre
 // https://iers-conventions.obspm.fr/
 //
+// Version: IERS Conventions (2010), Working Version 1.3.0
+// Archive: iersconventions_v1_3_0.tar.gz
+//
 // It is used for the GCRS to ITRF conversion as described in [IERS2010],
 // Page 54, Section 5.5.4.
 //
@@ -38,6 +41,8 @@
 //
 // The expressions for the fundamental arguments appearing in columns 4 to 8 (luni-solar part)
 // and in columns 6 to 17 (planetary part) are those of the IERS Conventions 2003
+//
+// clang-format on
 
 #pragma once
 
@@ -56,16 +61,16 @@ struct Table52bRow {
   double b_s_j_i;  // b_{s,j})_i
   double b_c_j_i;  // b_{c,j})_i
   int l;
-  int l_prime; // l'
+  int l_prime;  // l'
   int F;
   int D;
   int Om;
   int L_Me;
   int L_Ve;
   int L_E;
-  int L_Ma ;
+  int L_Ma;
   int L_J;
-  int L_Sa ;
+  int L_Sa;
   int L_U;
   int L_Ne;
   int p_A;
@@ -73,6 +78,8 @@ struct Table52bRow {
 
 // Flat table representation. Comes directly from the tab5.2a.txt.
 // No automatically deductible j markers available.
+//
+// clang-format off
 constexpr auto Table52bFlat = std::to_array<Table52bRow>({
 
 // -----------------------------------------------------------------------------------------------------------------------
@@ -1373,16 +1380,16 @@ constexpr auto Table52bFlat = std::to_array<Table52bRow>({
  {1275,          -0.02,           0.11,    0,    0,    0,    0,    1,    0,    0,    0,    0,    0,    0,    0,    0,    0},
 });
 
+// clang-format on
+
 // The table grouped by frequencies j.
 constexpr auto Table52b = std::to_array<std::span<const Table52bRow>>({
-  std::span<const Table52bRow>(&Table52bFlat[0],    962),  // j = 0
-  std::span<const Table52bRow>(&Table52bFlat[962],  277),  // j = 1
-  std::span<const Table52bRow>(&Table52bFlat[1239],  30),  // j = 2
-  std::span<const Table52bRow>(&Table52bFlat[1269],   5),  // j = 3
-  std::span<const Table52bRow>(&Table52bFlat[1274],   1),  // j = 4
+    std::span<const Table52bRow>(&Table52bFlat[0], 962),    // j = 0
+    std::span<const Table52bRow>(&Table52bFlat[962], 277),  // j = 1
+    std::span<const Table52bRow>(&Table52bFlat[1239], 30),  // j = 2
+    std::span<const Table52bRow>(&Table52bFlat[1269], 5),   // j = 3
+    std::span<const Table52bRow>(&Table52bFlat[1274], 1),   // j = 4
 });
-
-// clang-format on
 
 }  // namespace iers::table
 

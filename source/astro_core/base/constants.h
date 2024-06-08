@@ -77,6 +77,9 @@ inline constexpr double kNumDaysInJulianCentury = 36525;
 // The speed of light, in vacuum, meters per second.
 inline constexpr double kSpeedOfLight = 299792458;
 
+// Astronomical unit, meters.
+inline constexpr double kAstronomicalUnit = 149597870700;
+
 }  // namespace constants
 }  // namespace ASTRO_CORE_VERSION_NAMESPACE
 }  // namespace astro_core

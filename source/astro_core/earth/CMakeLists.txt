@@ -8,16 +8,20 @@
 set(PUBLIC_HEADERS
   earth.h
 
+  nutation.h
+
   orientation.h
   orientation_data.h
   orientation_table.h
   orientation_iers_a.h
   orientation_iers_b.h
 
+  precession.h
   rotation.h
 
   celestial_intermediate_pole.h
   geocentric_radius.h
+  intermediate_rotation.h
   terrestrial_intermediate_origin.h
 
   leap_second.h
@@ -29,11 +33,16 @@ set(PUBLIC_HEADERS
 )
 
 add_library(astro_core_earth_obj OBJECT
+  internal/intermediate_rotation.cc
+  internal/nutation.cc
+
   internal/orientation.cc
   internal/orientation_data.cc
   internal/orientation_table.cc
   internal/orientation_iers_a.cc
   internal/orientation_iers_b.cc
+
+  internal/precession.cc
 
   internal/leap_second.cc
   internal/leap_second_data.cc
@@ -42,9 +51,14 @@ add_library(astro_core_earth_obj OBJECT
 
   internal/celestial_intermediate_pole.cc
 
+  internal/nutation_arguments.cc
+  internal/nutation_arguments.h
+
   internal/iers/tab5.2a.h
   internal/iers/tab5.2b.h
   internal/iers/tab5.2d.h
+  internal/iers/tab5.3a.h
+  internal/iers/tab5.3b.h
 
   ${PUBLIC_HEADERS}
 )
@@ -86,20 +100,24 @@ target_link_libraries(astro_core_earth_test_data INTERFACE
 
 function(astro_core_earth_test PRIMITIVE_NAME)
   astro_core_test(
-      table_${PRIMITIVE_NAME} internal/${PRIMITIVE_NAME}_test.cc
+      earth_${PRIMITIVE_NAME} internal/${PRIMITIVE_NAME}_test.cc
       LIBRARIES astro_core_earth astro_core_earth_test_data)
 endfunction()
 
 astro_core_earth_test(celestial_intermediate_pole)
 astro_core_earth_test(geocentric_radius)
+astro_core_earth_test(intermediate_rotation)
 astro_core_earth_test(leap_second)
 astro_core_earth_test(leap_second_data)
 astro_core_earth_test(leap_second_table)
 astro_core_earth_test(leap_second_iers)
+astro_core_earth_test(nutation)
+astro_core_earth_test(nutation_arguments)
 astro_core_earth_test(orientation)
 astro_core_earth_test(orientation_data)
 astro_core_earth_test(orientation_table)
 astro_core_earth_test(orientation_iers_a)
 astro_core_earth_test(orientation_iers_b)
+astro_core_earth_test(precession)
 astro_core_earth_test(rotation)
 astro_core_earth_test(terrestrial_intermediate_origin)

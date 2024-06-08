@@ -404,7 +404,8 @@ auto GetMoonCoordinate(const Time& time) -> GCRF {
 
   // Fukushima-Williams precession angles.
   // [Vallado2013] Page 218, Eq. (3-74).
-
+  //
+  // TODO(sergey): Use CalculatePrecessionAngles06()?
   const double gamma = LunisolarNutationPolynomial(
       T, -0.052928, 10.556378, 0.4932044, -0.00031238, -2.788e-6, 2.60e-8);
   const double phi = LunisolarNutationPolynomial(
@@ -415,6 +416,8 @@ auto GetMoonCoordinate(const Time& time) -> GCRF {
   // Rotation matrix from Mean ecliptic coordinates to GCRS.
   // [Vallado2013] Page 218, Eq. (3-74).
   // [Hilton2006] Page 360, Eq. (11).
+  //
+  // TODO(sergey): Use PrecessionRotation()?
   const Mat3 mean_ecliptic_to_gcrs = ROT3(-gamma) * ROT1(-phi) * ROT3(psi);
 
   const Vec3 r_gcrf = mean_ecliptic_to_gcrs * r;

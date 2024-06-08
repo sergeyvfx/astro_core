@@ -7,10 +7,12 @@
 
 set(PUBLIC_HEADERS
   moon.h
+  sun.h
 )
 
 add_library(astro_core_body_obj OBJECT
   internal/moon.cc
+  internal/sun.cc
 
   ${PUBLIC_HEADERS}
 )
@@ -46,3 +48,4 @@ function(astro_core_body_test PRIMITIVE_NAME)
 endfunction()
 
 astro_core_body_test(moon)
+astro_core_body_test(sun)
