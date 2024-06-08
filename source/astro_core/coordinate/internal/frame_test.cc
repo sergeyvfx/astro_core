@@ -97,7 +97,7 @@ TEST(PositionVelocityFrame, CopyAndAssign) {
     Frame frame(src);
 
     src.position = Cartesian(7, 8, 9);
-    src.velocity = Cartesian(10, 11, 12);
+    src.velocity = CartesianDifferential(10, 11, 12);
 
     EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
     EXPECT_EQ(frame.velocity.GetCartesian(), Vec3(4, 5, 6));
@@ -113,7 +113,7 @@ TEST(PositionVelocityFrame, CopyAndAssign) {
     Frame frame(std::move(src));
 
     src.position = Cartesian(7, 8, 9);
-    src.velocity = Cartesian(10, 11, 12);
+    src.velocity = CartesianDifferential(10, 11, 12);
 
     EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
     EXPECT_EQ(frame.velocity.GetCartesian(), Vec3(4, 5, 6));
@@ -135,7 +135,7 @@ TEST(PositionVelocityFrame, CopyAndAssign) {
     frame = src;
 
     src.position = Cartesian(7, 8, 9);
-    src.velocity = Cartesian(10, 11, 12);
+    src.velocity = CartesianDifferential(10, 11, 12);
 
     EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
     EXPECT_EQ(frame.velocity.GetCartesian(), Vec3(4, 5, 6));
@@ -157,7 +157,7 @@ TEST(PositionVelocityFrame, CopyAndAssign) {
     frame = std::move(src);
 
     src.position = Cartesian(7, 8, 9);
-    src.velocity = Cartesian(10, 11, 12);
+    src.velocity = CartesianDifferential(10, 11, 12);
 
     EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
     EXPECT_EQ(frame.velocity.GetCartesian(), Vec3(4, 5, 6));

@@ -15,6 +15,7 @@ namespace astro_core {
 inline namespace ASTRO_CORE_VERSION_NAMESPACE {
 
 class Spherical;
+class CartesianDifferential;
 
 // Point in 3D cartesian coordinate system.
 class Cartesian {
@@ -27,10 +28,14 @@ class Cartesian {
                       const double new_z)
       : x(new_x), y(new_y), z(new_z) {}
 
-  // Explicit conversion form and to Vec3.
+  // Conversion form and to Vec3.
   constexpr Cartesian(const Vec3& vector)
       : x(vector(0)), y(vector(1)), z(vector(2)) {}
   inline operator Vec3() const { return {x, y, z}; }
+
+  // Disable indirect implicit conversion of differential to position (via
+  // CartesianDifferential -> Vec3 -> Cartesian).
+  Cartesian(const CartesianDifferential& other) = delete;
 
   explicit Cartesian(const Spherical& other);
 
@@ -75,10 +80,14 @@ class CartesianDifferential {
                                   const double new_d_z)
       : d_x(new_d_x), d_y(new_d_y), d_z(new_d_z) {}
 
-  // Explicit conversion form and to Vec3.
+  // Conversion form and to Vec3.
   constexpr CartesianDifferential(const Vec3& vector)
       : d_x(vector(0)), d_y(vector(1)), d_z(vector(2)) {}
   inline operator Vec3() const { return {d_x, d_y, d_z}; }
+
+  // Disable indirect implicit conversion of position to differential(via
+  // Cartesian -> Vec3 -> CartesianDifferential).
+  CartesianDifferential(const Cartesian& other) = delete;
 
   // Convert representation to cartesian.
   // Is a no-op, intended for use in generic templated code.
