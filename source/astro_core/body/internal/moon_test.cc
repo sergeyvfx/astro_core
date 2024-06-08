@@ -72,6 +72,23 @@ TEST(body, GetMoonCoordinate) {
 
   // The reference value is obtained using eraMoon98() and multiplying the
   // result position by ERFA_DAU.
+  // See source/validate/body/moon.c.
+
+  // TODO(sergey): The following Python code intuitively is expected to provide
+  // the same coordinate, but it is quite off. Is it because the algorithm in
+  // here and in ERFA does not consider epsa of Fukushima-Williams precession
+  // angles?
+  //
+  // >>> import astropy.coordinates
+  // >>> from astropy.time import Time
+  // >>> from astropy.utils import iers
+  // >>> from astropy import units as u
+  // >>> iers.conf.auto_download = False
+  // >>> t = Time("1992-04-12T00:00:00.000", scale="utc", format="isot")
+  // >>> gcrs = astropy.coordinates.get_body("moon", time=t)
+  // >>> (gcrs.cartesian.x.to(u.m).value, gcrs.cartesian.y.to(u.m).value,
+  // ...  gcrs.cartesian.z.to(u.m).value)
+
   EXPECT_THAT(Vec3(gcrf.position.cartesian()),
               Pointwise(DoubleNear(1e-6),
                         {-252168459.342350006104,

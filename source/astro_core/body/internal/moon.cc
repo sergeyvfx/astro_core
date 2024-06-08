@@ -391,6 +391,8 @@ auto GetMoonCoordinate(const Time& time) -> GCRF {
 
   const MeeusMoonCoordinate meeus = GetMeeusMoonCoordinate(jd_tt);
 
+  // TODO(sergey): There is probably a way to transform angles in spherical
+  // coordinates without conversion to cartesian representation.
   const Cartesian r = Spherical({.latitude = meeus.beta,
                                  .longitude = meeus.lambda,
                                  .distance = meeus.delta})
@@ -417,7 +419,7 @@ auto GetMoonCoordinate(const Time& time) -> GCRF {
 
   const Vec3 r_gcrf = mean_ecliptic_to_gcrs * r;
 
-  // TODO(sergey): Convert speed;
+  // TODO(sergey): Convert speed.
 
   return GCRF({.observation_time = time, .position = r_gcrf});
 }
