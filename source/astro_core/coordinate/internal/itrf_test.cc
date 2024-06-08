@@ -31,9 +31,9 @@ TEST_F(ITRFTest, Construct) {
   const ITRF coordinate(
       {.observation_time{time}, .position{1, 2, 3}, .velocity{{4, 5, 6}}});
 
-  EXPECT_EQ(coordinate.position.cartesian(), Vec3(1, 2, 3));
-  ASSERT_TRUE(coordinate.velocity.has_value());
-  EXPECT_EQ(coordinate.velocity.cartesian(), Vec3(4, 5, 6));
+  EXPECT_EQ(coordinate.position.GetCartesian(), Vec3(1, 2, 3));
+  ASSERT_TRUE(coordinate.velocity.HasValue());
+  EXPECT_EQ(coordinate.velocity.GetCartesian(), Vec3(4, 5, 6));
   EXPECT_EQ(coordinate.observation_time.AsFormat<DateTime>(), date_time);
 }
 
@@ -54,14 +54,14 @@ TEST_F(ITRFTest, FromGCRF) {
 
   EXPECT_EQ(itrf.observation_time, gcrf.observation_time);
 
-  EXPECT_THAT(Vec3(itrf.position.cartesian()),
+  EXPECT_THAT(Vec3(itrf.position.GetCartesian()),
               Pointwise(DoubleNear(1e-12),
                         {-2801.428206798944302136,
                          5602.703300938050233526,
                          -2645.094088710325195279}));
 
-  ASSERT_TRUE(itrf.velocity.has_value());
-  EXPECT_THAT(Vec3(itrf.velocity.cartesian()),
+  ASSERT_TRUE(itrf.velocity.HasValue());
+  EXPECT_THAT(Vec3(itrf.velocity.GetCartesian()),
               Pointwise(DoubleNear(1e-12),
                         {-5.184234346857372167,
                          -0.137714270932494498,
@@ -82,14 +82,14 @@ TEST_F(ITRFTest, FromTEME) {
 
   EXPECT_EQ(itrf.observation_time, teme.observation_time);
 
-  EXPECT_THAT(Vec3(itrf.position.cartesian()),
+  EXPECT_THAT(Vec3(itrf.position.GetCartesian()),
               Pointwise(DoubleNear(1e-12),
                         {-2801.428206798944302136,
                          5602.703300938050233526,
                          -2645.094088710325195279}));
 
-  ASSERT_TRUE(itrf.velocity.has_value());
-  EXPECT_THAT(Vec3(itrf.velocity.cartesian()),
+  ASSERT_TRUE(itrf.velocity.HasValue());
+  EXPECT_THAT(Vec3(itrf.velocity.GetCartesian()),
               Pointwise(DoubleNear(1e-12),
                         {-5.184234346857372167,
                          -0.137714270932494498,
@@ -163,13 +163,13 @@ TEST_F(ITRFTest, FromGeodetic) {
 
   const ITRF itrf = ITRF::FromGeodetic(geodetic);
 
-  EXPECT_THAT(Vec3(itrf.position.cartesian()),
+  EXPECT_THAT(Vec3(itrf.position.GetCartesian()),
               Pointwise(DoubleNear(1e-12),
                         {-4680888.602721118368208408,
                          2805218.446534294169396162,
                          -3292788.080450602807104588}));
 
-  EXPECT_FALSE(itrf.velocity.has_value());
+  EXPECT_FALSE(itrf.velocity.HasValue());
 
   EXPECT_EQ(itrf.observation_time.AsFormat<DateTime>(),
             geodetic.observation_time.AsFormat<DateTime>());

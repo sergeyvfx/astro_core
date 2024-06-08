@@ -28,9 +28,9 @@ TEST_F(GCRFTest, Construct) {
   const GCRF coordinate(
       {.observation_time{time}, .position{1, 2, 3}, .velocity{{4, 5, 6}}});
 
-  EXPECT_EQ(coordinate.position.cartesian(), Vec3(1, 2, 3));
-  ASSERT_TRUE(coordinate.velocity.has_value());
-  EXPECT_EQ(coordinate.velocity.cartesian(), Vec3(4, 5, 6));
+  EXPECT_EQ(coordinate.position.GetCartesian(), Vec3(1, 2, 3));
+  ASSERT_TRUE(coordinate.velocity.HasValue());
+  EXPECT_EQ(coordinate.velocity.GetCartesian(), Vec3(4, 5, 6));
   EXPECT_EQ(coordinate.observation_time.AsFormat<DateTime>(), date_time);
 }
 
@@ -51,15 +51,15 @@ TEST_F(GCRFTest, FromITRF) {
 
   EXPECT_EQ(gcrf.observation_time, itrf.observation_time);
 
-  EXPECT_THAT(Vec3(gcrf.position.cartesian()),
+  EXPECT_THAT(Vec3(gcrf.position.GetCartesian()),
               Pointwise(DoubleNear(1e-12),
                         {4374.025673658524283383,
                          4478.288319286147270759,
                          -2654.739186783237528289}));
 
-  ASSERT_TRUE(gcrf.velocity.has_value());
+  ASSERT_TRUE(gcrf.velocity.HasValue());
   EXPECT_THAT(
-      Vec3(gcrf.velocity.cartesian()),
+      Vec3(gcrf.velocity.GetCartesian()),
       Pointwise(
           DoubleNear(1e-12),
           {-2.139329590299860584, 5.174189009638810788, 5.220516738855706329}));

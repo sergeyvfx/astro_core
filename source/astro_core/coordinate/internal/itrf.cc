@@ -19,8 +19,8 @@ auto ITRF::FromGCRF(const GCRF& gcrf) -> ITRF {
   Vec3 itrf_velocity;
 
   GCRFToITRF(gcrf.observation_time,
-             gcrf.position.cartesian(),
-             gcrf.velocity.cartesian_or({0, 0, 0}),
+             gcrf.position.GetCartesian(),
+             gcrf.velocity.GetCartesianOr({0, 0, 0}),
              itrf_position,
              itrf_velocity);
 
@@ -29,7 +29,7 @@ auto ITRF::FromGCRF(const GCRF& gcrf) -> ITRF {
   itrf.observation_time = gcrf.observation_time;
   itrf.position = itrf_position;
 
-  if (gcrf.velocity.has_value()) {
+  if (gcrf.velocity.HasValue()) {
     itrf.velocity = itrf_velocity;
   }
 
@@ -41,8 +41,8 @@ auto ITRF::FromTEME(const TEME& teme) -> ITRF {
   Vec3 itrf_velocity;
 
   TEMEToITRF(teme.observation_time,
-             teme.position.cartesian(),
-             teme.velocity.cartesian_or({0, 0, 0}),
+             teme.position.GetCartesian(),
+             teme.velocity.GetCartesianOr({0, 0, 0}),
              itrf_position,
              itrf_velocity);
 
@@ -51,7 +51,7 @@ auto ITRF::FromTEME(const TEME& teme) -> ITRF {
   itrf.observation_time = teme.observation_time;
   itrf.position = itrf_position;
 
-  if (teme.velocity.has_value()) {
+  if (teme.velocity.HasValue()) {
     itrf.velocity = itrf_velocity;
   }
 

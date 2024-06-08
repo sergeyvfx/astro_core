@@ -114,7 +114,7 @@ auto Geodetic::FromGeographic(const Geographic& geographic,
 }
 
 auto Geodetic::FromITRF(const ITRF& itrf) -> Geodetic {
-  return FromGeocentric(itrf.position.cartesian(), itrf.observation_time);
+  return FromGeocentric(itrf.position.GetCartesian(), itrf.observation_time);
 }
 
 }  // namespace ASTRO_CORE_VERSION_NAMESPACE

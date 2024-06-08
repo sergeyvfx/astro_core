@@ -21,18 +21,18 @@
 namespace astro_core {
 inline namespace ASTRO_CORE_VERSION_NAMESPACE {
 
-auto Horizontal::FromITRF(const ITRF& itrf, const ITRF& site_itrf)
-    -> Horizontal {
+auto Horizontal::FromITRF(const ITRF& itrf,
+                          const ITRF& site_itrf) -> Horizontal {
   // [Vallado2006] ALGORITHM 27: RAZEL
 
   const Geodetic gd = Geodetic::FromITRF(site_itrf);
   const double phi_gd = gd.latitude;
   const double lambda = gd.longitude;
 
-  const Vec3 r_ecef = itrf.position.cartesian();
-  const Vec3 v_ecef = itrf.velocity.cartesian_or({0, 0, 0});
+  const Vec3 r_ecef = itrf.position.GetCartesian();
+  const Vec3 v_ecef = itrf.velocity.GetCartesianOr({0, 0, 0});
 
-  const Vec3 r_site_ecef = site_itrf.position.cartesian();
+  const Vec3 r_site_ecef = site_itrf.position.GetCartesian();
 
   const Vec3 rho_ecef = r_ecef - r_site_ecef;
   const Vec3 drho_ecef = v_ecef;

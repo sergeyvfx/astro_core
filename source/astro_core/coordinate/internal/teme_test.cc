@@ -28,9 +28,9 @@ TEST_F(TEMETest, Construct) {
   const TEME coordinate(
       {.observation_time{time}, .position{1, 2, 3}, .velocity{{4, 5, 6}}});
 
-  EXPECT_EQ(coordinate.position.cartesian(), Vec3(1, 2, 3));
-  ASSERT_TRUE(coordinate.velocity.has_value());
-  EXPECT_EQ(coordinate.velocity.cartesian(), Vec3(4, 5, 6));
+  EXPECT_EQ(coordinate.position.GetCartesian(), Vec3(1, 2, 3));
+  ASSERT_TRUE(coordinate.velocity.HasValue());
+  EXPECT_EQ(coordinate.velocity.GetCartesian(), Vec3(4, 5, 6));
   EXPECT_EQ(coordinate.observation_time.AsFormat<DateTime>(), date_time);
 }
 
@@ -52,13 +52,13 @@ TEST_F(TEMETest, FromITRF) {
   EXPECT_EQ(teme.observation_time, itrf.observation_time);
 
   EXPECT_THAT(
-      Vec3(teme.position.cartesian()),
+      Vec3(teme.position.GetCartesian()),
       Pointwise(DoubleNear(1e-12),
                 {4357.092619856639, 4500.439126822302, -2645.108425391841}));
 
-  ASSERT_TRUE(teme.velocity.has_value());
+  ASSERT_TRUE(teme.velocity.HasValue());
   EXPECT_THAT(
-      Vec3(teme.velocity.cartesian()),
+      Vec3(teme.velocity.GetCartesian()),
       Pointwise(DoubleNear(1e-12),
                 {-2.1768117558889037, 5.163121595591936, 5.215977759982141}));
 }

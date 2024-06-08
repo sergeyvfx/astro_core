@@ -76,15 +76,15 @@ TEST(OrbitalState, BasicPrediction) {
 
   const TEME& teme = *predict_result;
 
-  EXPECT_THAT(Vec3(teme.position.cartesian()) / 1000.0,
+  EXPECT_THAT(Vec3(teme.position.GetCartesian()) / 1000.0,
               Pointwise(DoubleNear(1e-12),
                         {4357.092619845991976035,
                          4500.439126847555598943,
                          -2645.108425366327537631}));
 
-  ASSERT_TRUE(teme.velocity.has_value());
+  ASSERT_TRUE(teme.velocity.HasValue());
   EXPECT_THAT(
-      Vec3(teme.velocity.cartesian()) / 1000.0,
+      Vec3(teme.velocity.GetCartesian()) / 1000.0,
       Pointwise(
           DoubleNear(1e-12),
           {-2.176811755915935453, 5.163121595564016175, 5.215977759998599694}));

@@ -93,14 +93,14 @@ TEST(body, GetMoonCoordinate) {
   // is in meters, which leaves less decimals which can be guaranteed.
   constexpr double kEpsilon = 1e-4;
 
-  EXPECT_THAT(Vec3(gcrf.position.cartesian()),
+  EXPECT_THAT(Vec3(gcrf.position.GetCartesian()),
               Pointwise(DoubleNear(kEpsilon),
                         {-252168459.342350006104,
                          253937183.605159878731,
                          87476708.822706788778}));
 
   // TODO(sergey): Support velocity calculation.
-  EXPECT_FALSE(gcrf.velocity.has_value());
+  EXPECT_FALSE(gcrf.velocity.HasValue());
 }
 
 }  // namespace astro_core

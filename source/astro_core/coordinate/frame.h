@@ -4,10 +4,14 @@
 
 // Base class for frame defining an object position and velocity measured at a
 // specific observation time.
+// The frame stores position and velocity in the given type, but allows an easy
+// conversion between different representation types.
 
 #pragma once
 
-#include "astro_core/coordinate/representation_view.h"
+#include <optional>
+
+#include "astro_core/coordinate/representation.h"
 #include "astro_core/time/time.h"
 #include "astro_core/version/version.h"
 
@@ -20,28 +24,15 @@ class Time;
 //
 // The position is always known and position.has_value() will return true.
 //
-// Representation defines the native representation of position.
-template <class Representation>
+// PositionType defines the native type in which the position is stored.
+template <class PositionType>
 class PositionFrame {
-  using PositionRepresentationView = MutableRepresentationView<Representation>;
-
  public:
   // Construct default cartesian coordinate.
   //
   // All fields are initialized to their default values. Position is initialized
   // a zero vector. Time is initialized to a zero point in an unspecified scale.
   PositionFrame() = default;
-
-  // Redefine copy construction ans assignments in a way that only data is
-  // copied, but not the view. The view always points to the data of its owner
-  // object.
-  PositionFrame(const PositionFrame& other)
-      : observation_time(other.observation_time), position_(other.position_) {}
-  auto operator=(const PositionFrame& other) -> PositionFrame& {
-    observation_time = other.observation_time;
-    position_ = other.position_;
-    return *this;
-  }
 
   // Initialization from the given parameters.
   //
@@ -56,7 +47,7 @@ class PositionFrame {
   //   Frame coord({.observation_time = t, .position = r});
   struct Parameters {
     Time observation_time{};
-    Representation position{};
+    PositionType position{};
   };
   explicit PositionFrame(const Parameters& parameters) {
     this->observation_time = parameters.observation_time;
@@ -67,12 +58,9 @@ class PositionFrame {
   // measured.
   Time observation_time{};
 
-  // View at the position of the object.
-  PositionRepresentationView position{position_};
-
- private:
-  // The actual storage of the position.
-  Representation position_{};
+  // Position of the object, stored in a type which is makes it easy to convert
+  // between representations.
+  Representation<PositionType> position;
 };
 
 // Coordinate frame for observations for which object position is known, and
@@ -85,16 +73,10 @@ class PositionFrame {
 //     std::cout << "Velocity: " << frame.velocity.cartesian() << std::endl;
 //   }
 //
-// Representation defines the native representation of position, and
-// DifferentialRepresentation defines the native representation of velocity.
-template <class Representation, class DifferentialRepresentation>
-class PositionVelocityFrame : public PositionFrame<Representation> {
-  using BaseClass = PositionFrame<Representation>;
-
-  using VelocityRepresentation = std::optional<DifferentialRepresentation>;
-  using VelocityRepresentationView =
-      MutableRepresentationView<VelocityRepresentation>;
-
+// PositionType defines the native type in which the position is stored, and
+// DifferentialType defines the native type in which the velocity is stored.
+template <class PositionType, class DifferentialType>
+class PositionVelocityFrame : public PositionFrame<PositionType> {
  public:
   // Construct default cartesian coordinate.
   //
@@ -102,17 +84,6 @@ class PositionVelocityFrame : public PositionFrame<Representation> {
   // are initialized a zero vector. Time is initialized to a zero point in an
   // unspecified scale.
   PositionVelocityFrame() = default;
-
-  // Redefine copy construction ans assignments in a way that only data is
-  // copied, but not the view. The view always points to the data of its owner
-  // object.
-  PositionVelocityFrame(const PositionVelocityFrame& other)
-      : BaseClass(other), velocity_(other.velocity_) {}
-  auto operator=(const PositionVelocityFrame& other) -> PositionVelocityFrame& {
-    BaseClass::operator=(other);
-    velocity_ = other.velocity_;
-    return *this;
-  }
 
   // Initialization from the given parameters.
   //
@@ -127,8 +98,8 @@ class PositionVelocityFrame : public PositionFrame<Representation> {
   //   Frame coord({.observation_time = t, .position = r, .velocity = v});
   struct Parameters {
     Time observation_time{};
-    Representation position{};
-    VelocityRepresentation velocity{};
+    PositionType position{};
+    std::optional<DifferentialType> velocity{};
   };
   explicit PositionVelocityFrame(const Parameters& parameters) {
     this->observation_time = parameters.observation_time;
@@ -136,12 +107,9 @@ class PositionVelocityFrame : public PositionFrame<Representation> {
     this->velocity = parameters.velocity;
   }
 
-  // View at the velocity of the object.
-  VelocityRepresentationView velocity{velocity_};
-
- private:
-  // The actual storage of the velocity.
-  VelocityRepresentation velocity_{};
+  // Velocity of an object, stored in a type which is makes it easy to convert
+  // between representations.
+  Representation<std::optional<DifferentialType>> velocity;
 };
 
 }  // namespace ASTRO_CORE_VERSION_NAMESPACE

@@ -19,7 +19,7 @@ set(PUBLIC_HEADERS
   qth.h
   teme.h
 
-  representation_view.h
+  representation.h
 
   frame_transform.h
 )
@@ -84,6 +84,6 @@ astro_core_coordinate_test(itrf)
 astro_core_coordinate_test(qth)
 astro_core_coordinate_test(teme)
 
-astro_core_coordinate_test(representation_view)
+astro_core_coordinate_test(representation)
 
 astro_core_coordinate_test(frame_transform)

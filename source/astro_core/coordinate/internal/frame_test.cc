@@ -29,7 +29,7 @@ TEST(PositionFrame, CopyAndAssign) {
 
     src.position = Cartesian(4, 5, 6);
 
-    EXPECT_EQ(frame.position.cartesian(), Vec3(1, 2, 3));
+    EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
   }
 
   // Move constructor.
@@ -42,7 +42,7 @@ TEST(PositionFrame, CopyAndAssign) {
 
     src.position = Cartesian(4, 5, 6);
 
-    EXPECT_EQ(frame.position.cartesian(), Vec3(1, 2, 3));
+    EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
   }
 
   // Copy operator.
@@ -61,7 +61,7 @@ TEST(PositionFrame, CopyAndAssign) {
 
     src.position = Cartesian(4, 5, 6);
 
-    EXPECT_EQ(frame.position.cartesian(), Vec3(1, 2, 3));
+    EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
   }
 
   // Move operator.
@@ -80,7 +80,7 @@ TEST(PositionFrame, CopyAndAssign) {
 
     src.position = Cartesian(4, 5, 6);
 
-    EXPECT_EQ(frame.position.cartesian(), Vec3(1, 2, 3));
+    EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
   }
 }
 
@@ -99,8 +99,8 @@ TEST(PositionVelocityFrame, CopyAndAssign) {
     src.position = Cartesian(7, 8, 9);
     src.velocity = Cartesian(10, 11, 12);
 
-    EXPECT_EQ(frame.position.cartesian(), Vec3(1, 2, 3));
-    EXPECT_EQ(frame.velocity.cartesian(), Vec3(4, 5, 6));
+    EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
+    EXPECT_EQ(frame.velocity.GetCartesian(), Vec3(4, 5, 6));
   }
 
   // Move constructor.
@@ -115,8 +115,8 @@ TEST(PositionVelocityFrame, CopyAndAssign) {
     src.position = Cartesian(7, 8, 9);
     src.velocity = Cartesian(10, 11, 12);
 
-    EXPECT_EQ(frame.position.cartesian(), Vec3(1, 2, 3));
-    EXPECT_EQ(frame.velocity.cartesian(), Vec3(4, 5, 6));
+    EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
+    EXPECT_EQ(frame.velocity.GetCartesian(), Vec3(4, 5, 6));
   }
 
   // Copy operator.
@@ -137,8 +137,8 @@ TEST(PositionVelocityFrame, CopyAndAssign) {
     src.position = Cartesian(7, 8, 9);
     src.velocity = Cartesian(10, 11, 12);
 
-    EXPECT_EQ(frame.position.cartesian(), Vec3(1, 2, 3));
-    EXPECT_EQ(frame.velocity.cartesian(), Vec3(4, 5, 6));
+    EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
+    EXPECT_EQ(frame.velocity.GetCartesian(), Vec3(4, 5, 6));
   }
 
   // Move operator.
@@ -159,8 +159,8 @@ TEST(PositionVelocityFrame, CopyAndAssign) {
     src.position = Cartesian(7, 8, 9);
     src.velocity = Cartesian(10, 11, 12);
 
-    EXPECT_EQ(frame.position.cartesian(), Vec3(1, 2, 3));
-    EXPECT_EQ(frame.velocity.cartesian(), Vec3(4, 5, 6));
+    EXPECT_EQ(frame.position.GetCartesian(), Vec3(1, 2, 3));
+    EXPECT_EQ(frame.velocity.GetCartesian(), Vec3(4, 5, 6));
   }
 }
 

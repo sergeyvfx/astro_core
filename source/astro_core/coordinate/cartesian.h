@@ -99,8 +99,8 @@ class CartesianDifferential {
   }
   inline bool operator!=(const Vec3& other) const { return !(*this == other); }
 
-  friend auto operator<<(std::ostream& os, const CartesianDifferential& v)
-      -> std::ostream&;
+  friend auto operator<<(std::ostream& os,
+                         const CartesianDifferential& v) -> std::ostream&;
 
   double d_x = 0;
   double d_y = 0;
