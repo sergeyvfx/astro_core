@@ -13,19 +13,28 @@ namespace astro_core {
 namespace {
 
 static void RunTest(const source_location loc = source_location::current()) {
-  EXPECT_EQ(loc.line(), 34);
+  EXPECT_EQ(loc.line(), 43);
 
   // Column access is not easy to match across different compilers.
   // EXPECT_EQ(loc.column(), 28);
 
-  // In Clang the function_name evaluates to just the function name, but in GCC
-  // it evaluates to the full function name including its namespace.
-  // For example, with GCC-12 the full function_name is
-  //   "void radio_core::{anonymous}::MyFunction()"
-  // and with Clang 15 it is just "MyFunction"
+  // The format of the function name depends on a platform or compiler. Some
+  // examples:
+  //
+  //   - With Clang the function_name evaluates to just the function name, in
+  //     this case "MyFunction".
+  //
+  //   - With GCC it evaluates to the full function name including its
+  //     namespace. For example, with GCC-12 the full function_name is
+  //     "void radio_core::{anonymous}::MyFunction()".
+  //
+  //   - With MSVC the function arguments might follow C-style prototype.
+  //     For example:
+  //     void __cdecl astro_core::`anonymous-namespace'::MyFunction(void).
   EXPECT_TRUE(
       (std::string(loc.function_name()) == "MyFunction") ||
-      (std::string_view(loc.function_name()).ends_with("::MyFunction()")));
+      (std::string_view(loc.function_name()).ends_with("::MyFunction()")) ||
+      (std::string_view(loc.function_name()).ends_with("::MyFunction(void)")));
 
   EXPECT_TRUE(
       std::string_view(loc.file_name()).ends_with("source_location_test.cc"));
