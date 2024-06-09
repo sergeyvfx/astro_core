@@ -89,8 +89,12 @@ TEST(body, GetMoonCoordinate) {
   // >>> (gcrs.cartesian.x.to(u.m).value, gcrs.cartesian.y.to(u.m).value,
   // ...  gcrs.cartesian.z.to(u.m).value)
 
+  // The ERFA uses 1e-11 tolerance for the result of eraMoon98(). Here the unit
+  // is in meters, which leaves less decimals which can be guaranteed.
+  constexpr double kEpsilon = 1e-4;
+
   EXPECT_THAT(Vec3(gcrf.position.cartesian()),
-              Pointwise(DoubleNear(1e-6),
+              Pointwise(DoubleNear(kEpsilon),
                         {-252168459.342350006104,
                          253937183.605159878731,
                          87476708.822706788778}));
