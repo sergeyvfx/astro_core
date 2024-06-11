@@ -97,4 +97,64 @@ TEST(SphericalDifferential, Construct) {
   }
 }
 
+TEST(SphericalDifferential, ToCartesian) {
+  {
+    // Below goes verification code using Numpy and Astropy.
+    // For the verification code which uses ERFA library see
+    // source/validate/cartesian_to_spherical.c.
+    //
+    // clang-format off
+  //   >>> import numpy as np
+  //   >>> np.set_printoptions(precision=18, suppress=True)
+  //   >>> from astropy.coordinates import CartesianDifferential
+  //   >>> from astropy.coordinates import CartesianRepresentation
+  //   >>> from astropy.coordinates import SphericalDifferential
+  //   >>> from astropy.coordinates import SphericalRepresentation
+  //   >>> from astropy import units as u
+  //   >>> spherical_pos = SphericalRepresentation(2*u.rad, 1*u.rad, 3*u.m)
+  //   >>> spherical_vel = SphericalDifferential(0.4*u.rad/u.s, 0.5*u.rad/u.s, 0.6*u.m/u.s)
+  //   >>> spherical_vel.represent_as(CartesianDifferential, base=spherical_pos)
+  //   <CartesianDifferential (d_x, d_y, d_z) in m / s
+  //       (-0.1991984203793282, -1.1227579184304932, 1.3153360496869475)>
+    // clang-format on
+    //
+    // Verification using Python's ERFA library:
+    //   >>> import numpy as np
+    //   >>> np.set_printoptions(precision=18, suppress=True)
+    //   >>> import erfa
+    //   >>> erfa.s2pv(2, 1, 3, 0.4, 0.5, 0.6)
+    //   ([-0.6745352860984587,  1.4738864893016457,  2.5244129544236893],
+    //    [-0.19919842037932808, -1.1227579184304932 ,  1.3153360496869475 ])
+
+    const Spherical position_spherical(
+        {.latitude = 1, .longitude = 2, .distance = 3});
+    const SphericalDifferential velocity_spherical(
+        {.d_latitude = 0.5, .d_longitude = 0.4, .d_distance = 0.6});
+    const CartesianDifferential velocity_cartesian =
+        velocity_spherical.ToCartesian(position_spherical);
+
+    EXPECT_THAT(Vec3(velocity_cartesian),
+                Pointwise(DoubleNear(1e-12),
+                          Vec3(-0.19919842037932808,
+                               -1.1227579184304932,
+                               1.3153360496869475)));
+  }
+
+  // Test conversion when position is in cartesian coordinates.
+  {
+    const Cartesian position_cartesian =
+        Spherical({.latitude = 1, .longitude = 2, .distance = 3}).ToCartesian();
+    const SphericalDifferential velocity_spherical(
+        {.d_latitude = 0.5, .d_longitude = 0.4, .d_distance = 0.6});
+    const CartesianDifferential velocity_cartesian =
+        velocity_spherical.ToCartesian(position_cartesian);
+
+    EXPECT_THAT(Vec3(velocity_cartesian),
+                Pointwise(DoubleNear(1e-12),
+                          Vec3(-0.19919842037932808,
+                               -1.1227579184304932,
+                               1.3153360496869475)));
+  }
+}
+
 }  // namespace astro_core

@@ -35,8 +35,42 @@ auto operator<<(std::ostream& os, const Spherical& r) -> std::ostream& {
   return os;
 }
 
-auto operator<<(std::ostream& os, const SphericalDifferential& v)
-    -> std::ostream& {
+auto SphericalDifferential::ToCartesian(const Spherical& position) const
+    -> CartesianDifferential {
+  // The formulas in readable form can be found at
+  //
+  //   http://www.astrosurf.com/jephem/library/li110spherCart_en.htm
+  //
+  // NOTE: It seems the signs in the (formulae 2) are inverted.
+  //
+  // TODO(sergey): Find a source which derives exact formulas matching ERFA for
+  // the ease of understanding.
+
+  const double sin_theta = Sin(position.longitude);
+  const double cos_theta = Cos(position.longitude);
+  const double sin_phi = Sin(position.latitude);
+  const double cos_phi = Cos(position.latitude);
+
+  Vec3 cartesian;
+  cartesian(0) = cos_phi * cos_theta * d_distance -
+                 position.distance * cos_phi * sin_theta * d_longitude -
+                 position.distance * sin_phi * cos_theta * d_latitude;
+  cartesian(1) = cos_phi * sin_theta * d_distance +
+                 position.distance * cos_phi * cos_theta * d_longitude -
+                 position.distance * sin_phi * sin_theta * d_latitude;
+  cartesian(2) =
+      sin_phi * d_distance + position.distance * cos_phi * d_latitude;
+
+  return {cartesian};
+}
+
+auto SphericalDifferential::ToCartesian(const Cartesian& position) const
+    -> CartesianDifferential {
+  return ToCartesian(position.ToSpherical());
+}
+
+auto operator<<(std::ostream& os,
+                const SphericalDifferential& v) -> std::ostream& {
   os << "(d_latitude: " << v.d_latitude << ", d_longitude: " << v.d_longitude
      << ", d_distance: " << v.d_distance << ")";
   return os;

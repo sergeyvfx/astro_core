@@ -101,4 +101,122 @@ TEST(CartesianDifferential, Construct) {
   }
 }
 
+TEST(CartesianDifferential, ToSpherical) {
+  {
+    // Below goes verification code using Numpy and Astropy.
+    // For the verification code which uses ERFA library see
+    // source/validate/cartesian_to_spherical.c.
+    //
+    // clang-format off
+    //   >>> import numpy as np
+    //   >>> np.set_printoptions(precision=18, suppress=True)
+    //   >>> from astropy.coordinates import CartesianDifferential
+    //   >>> from astropy.coordinates import CartesianRepresentation
+    //   >>> from astropy.coordinates import SphericalDifferential
+    //   >>> from astropy.coordinates import SphericalRepresentation
+    //   >>> from astropy import units as u
+    //   >>> cartesian_pos = CartesianRepresentation(1, 2, 3) * u.m
+    //   >>> cartesian_vel = CartesianDifferential(0.4, 0.5, 0.6) * u.m / u.s
+    //   >>> cartesian_vel.represent_as(SphericalDifferential, base=cartesian_pos)
+    //   <SphericalDifferential (d_lon, d_lat, d_distance) in (rad / s, rad / s, m / s)
+    //       (-0.059999999999999984, -0.038332593899996416, 0.855235974119758)>
+    // clang-format on
+    //
+    // Verification using Python's ERFA library:
+    //   >>> import numpy as np
+    //   >>> np.set_printoptions(precision=18, suppress=True)
+    //   >>> import numpy as np
+    //   >>> import erfa
+    //   >>> pv = np.array(([1.0, 2.0, 3.0], [0.4, 0.5, 0.6]),
+    //   ...               dtype=erfa.dt_pv)
+    //   >>> erfa.pv2s(pv)
+    //   (1.1071487177940904, 0.9302740141154721, 3.7416573867739413,
+    //    -0.06000000000000001, -0.03833259389999637, 0.8552359741197579)
+
+    const Cartesian position_cartesian(1, 2, 3);
+    const CartesianDifferential velocity_cartesian(0.4, 0.5, 0.6);
+    const SphericalDifferential velocity_spherical =
+        velocity_cartesian.ToSpherical(position_cartesian);
+
+    EXPECT_NEAR(velocity_spherical.d_latitude, -0.03833259389999637, 1e-12);
+    EXPECT_NEAR(velocity_spherical.d_longitude, -0.06000000000000001, 1e-12);
+    EXPECT_NEAR(velocity_spherical.d_distance, 0.8552359741197579, 1e-12);
+  }
+
+  // Zero position, non-zero derivatives.
+  {
+    //   >>> import numpy as np
+    //   >>> np.set_printoptions(precision=18, suppress=True)
+    //   >>> import numpy as np
+    //   >>> import erfa
+    //   >>> pv = np.array(([0.0, 0.0, 0.0], [0.4, 0.5, 0.6]),
+    //   ...               dtype=erfa.dt_pv)
+    //   >>> erfa.pv2s(pv)
+    //   (0.8960553845713439, 0.7529077706294455, 0.0,
+    //    0.0, 2.6571103042006167e-17, 0.8774964387392122)
+
+    const Cartesian position_cartesian(0, 0, 0);
+    const CartesianDifferential velocity_cartesian(0.4, 0.5, 0.6);
+    const SphericalDifferential velocity_spherical =
+        velocity_cartesian.ToSpherical(position_cartesian);
+
+    EXPECT_NEAR(velocity_spherical.d_latitude, 2.6571103042006167e-17, 1e-12);
+    EXPECT_NEAR(velocity_spherical.d_longitude, 0.0, 1e-12);
+    EXPECT_NEAR(velocity_spherical.d_distance, 0.8774964387392122, 1e-12);
+  }
+
+  // Zero position, zero angular derivatives.
+  {
+    //   >>> import numpy as np
+    //   >>> np.set_printoptions(precision=18, suppress=True)
+    //   >>> import numpy as np
+    //   >>> import erfa
+    //   >>> pv = np.array(([0.0, 0.0, 0.0], [0.0, 0.0, 0.6]),
+    //   ...               dtype=erfa.dt_pv)
+    //   >>> erfa.pv2s(pv)
+    //   (0.0, 1.5707963267948966, 0.0, 0.0, 0.0, 0.6)
+
+    const Cartesian position_cartesian(0, 0, 0);
+    const CartesianDifferential velocity_cartesian(0.0, 0.0, 0.6);
+    const SphericalDifferential velocity_spherical =
+        velocity_cartesian.ToSpherical(position_cartesian);
+
+    EXPECT_NEAR(velocity_spherical.d_latitude, 0.0, 1e-12);
+    EXPECT_NEAR(velocity_spherical.d_longitude, 0.0, 1e-12);
+    EXPECT_NEAR(velocity_spherical.d_distance, 0.6, 1e-12);
+  }
+
+  // All zero.
+  {
+    //   >>> import numpy as np
+    //   >>> np.set_printoptions(precision=18, suppress=True)
+    //   >>> import erfa
+    //   >>> pv = np.array(([0.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
+    //   ...               dtype=erfa.dt_pv)
+    //   >>> erfa.pv2s(pv)
+    //   (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+
+    const Cartesian position_cartesian(0, 0, 0);
+    const CartesianDifferential velocity_cartesian(0.0, 0.0, 0.0);
+    const SphericalDifferential velocity_spherical =
+        velocity_cartesian.ToSpherical(position_cartesian);
+
+    EXPECT_NEAR(velocity_spherical.d_latitude, 0.0, 1e-12);
+    EXPECT_NEAR(velocity_spherical.d_longitude, 0.0, 1e-12);
+    EXPECT_NEAR(velocity_spherical.d_distance, 0.0, 1e-12);
+  }
+
+  // Test conversion when position is in spherical coordinates.
+  {
+    const Spherical position_spherical = Cartesian(1, 2, 3).ToSpherical();
+    const CartesianDifferential velocity_cartesian(0.4, 0.5, 0.6);
+    const SphericalDifferential velocity_spherical =
+        velocity_cartesian.ToSpherical(position_spherical);
+
+    EXPECT_NEAR(velocity_spherical.d_latitude, -0.03833259389999637, 1e-12);
+    EXPECT_NEAR(velocity_spherical.d_longitude, -0.06000000000000001, 1e-12);
+    EXPECT_NEAR(velocity_spherical.d_distance, 0.8552359741197579, 1e-12);
+  }
+}
+
 }  // namespace astro_core

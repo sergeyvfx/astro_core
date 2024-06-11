@@ -14,6 +14,7 @@ namespace astro_core {
 inline namespace ASTRO_CORE_VERSION_NAMESPACE {
 
 class Cartesian;
+class CartesianDifferential;
 
 class Spherical {
  public:
@@ -103,9 +104,29 @@ class SphericalDifferential {
 
   // Convert representation to spherical.
   // Is a no-op, intended for use in generic templated code.
+  //
+  // TODO(sergey): Add position as an argument to make it consistent with the
+  // ToCartesian().
   constexpr inline auto ToSpherical() const -> const SphericalDifferential& {
     return *this;
   }
+  constexpr inline auto ToSpherical(const Spherical& /*position*/) const
+      -> const SphericalDifferential& {
+    return *this;
+  }
+  constexpr inline auto ToSpherical(const Cartesian& /*position*/) const
+      -> const SphericalDifferential& {
+    return *this;
+  }
+
+  // Convert representation to spherical.
+  //
+  // The position is position of observed object at the moment when the velocity
+  // was measured.
+  //
+  // This is an equivalent of the velocity transform from ERFA eraPv2s().
+  auto ToCartesian(const Spherical& position) const -> CartesianDifferential;
+  auto ToCartesian(const Cartesian& position) const -> CartesianDifferential;
 
   // Check for an exact equality.
   inline bool operator==(const SphericalDifferential& other) const = default;
@@ -113,8 +134,8 @@ class SphericalDifferential {
     return !(*this == other);
   }
 
-  friend auto operator<<(std::ostream& os, const SphericalDifferential& r)
-      -> std::ostream&;
+  friend auto operator<<(std::ostream& os,
+                         const SphericalDifferential& r) -> std::ostream&;
 
   // Differential of latitude. Radians per unit time.
   double d_latitude = 0;

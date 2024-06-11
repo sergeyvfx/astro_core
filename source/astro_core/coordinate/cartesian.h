@@ -16,6 +16,7 @@ inline namespace ASTRO_CORE_VERSION_NAMESPACE {
 
 class Spherical;
 class CartesianDifferential;
+class SphericalDifferential;
 
 // Point in 3D cartesian coordinate system.
 class Cartesian {
@@ -91,9 +92,29 @@ class CartesianDifferential {
 
   // Convert representation to cartesian.
   // Is a no-op, intended for use in generic templated code.
+  //
+  // TODO(sergey): Add position as an argument to make it consistent with the
+  // ToSpherical().
   constexpr inline auto ToCartesian() const -> const CartesianDifferential& {
     return *this;
   }
+  constexpr inline auto ToCartesian(const Cartesian& /*position*/) const
+      -> const CartesianDifferential& {
+    return *this;
+  }
+  constexpr inline auto ToCartesian(const Spherical& /*position*/) const
+      -> const CartesianDifferential& {
+    return *this;
+  }
+
+  // Convert representation to spherical.
+  //
+  // The position is position of observed object at the moment when the velocity
+  // was measured.
+  //
+  // This is an equivalent of the velocity transform from ERFA eraPv2s().
+  auto ToSpherical(const Cartesian& position) const -> SphericalDifferential;
+  auto ToSpherical(const Spherical& position) const -> SphericalDifferential;
 
   // Check for an exact equality.
   inline bool operator==(const CartesianDifferential& other) const = default;
