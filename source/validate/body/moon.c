@@ -4,6 +4,14 @@
 
 // A code which uses ERFA library to generate verification data for the
 // Moon coordinates in moon_test.cc.
+//
+// clang-format off
+//   $ ERFA=/opt/local/erfa make body_moon
+//   $ ./bin/body_moon
+//   p: (-0.001685642035962147, 0.001697465227392170, 0.000584745681294692) AU
+//      (-252168459.342350006103515625, 253937183.605159878730773926, 87476708.822706788778305054) m
+//   v: (-0.000440034036330798, -0.000375144412394738, -0.000207616547668232)
+// clang-format on
 
 #include <erfa.h>
 #include <erfam.h>
