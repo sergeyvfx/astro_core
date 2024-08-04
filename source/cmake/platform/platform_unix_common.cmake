@@ -35,7 +35,7 @@ if(WITH_DEVELOPER_SANITIZER)
   add_compiler_flag(DEFAULT_CXX_FLAGS "${_sanitizer_flags}")
 
   if(APPLE)
-    # Pass -fsanitize=address to the linker so that it links agains ASAN
+    # Pass -fsanitize=address to the linker so that it links against ASAN
     # libraries avoiding linker error when using Xcode generator.
     add_compiler_flag(DEFAULT_LINKER_FLAGS "${_sanitizer_flags}")
   endif()
@@ -67,7 +67,6 @@ add_c_flag_if_supported(DEFAULT_CC_FLAGS -fno-strict-aliasing)
 #     place.
 
 add_c_flag_if_supported(DEFAULT_CC_FLAGS -march=native)
-add_c_flag_if_supported(PROCESOR_CC_FLAGS -mtune=native)
 
 ################################################################################
 # Enable extra warnings which are not covered with the Wall and the ones we want

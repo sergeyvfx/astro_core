@@ -26,7 +26,7 @@ This module defines the following variables:
 ``ClangTidy_VERSION_MAJOR``
   A major part of the clang-tidy version.
 
-``ClangTidy_VERSION_MINTO``
+``ClangTidy_VERSION_MINOR``
   A minor part of the clang-tidy version.
 
 `ClangTidy_VERSION_PATCH``

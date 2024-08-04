@@ -8,7 +8,7 @@
 # Sanitizer.
 
 if(WITH_DEVELOPER_SANITIZER)
-  message(FATAL_ERROT "Sanitizer is not supported on this platform")
+  message(FATAL_ERROR "Sanitizer is not supported on this platform")
 endif()
 
 ################################################################################
@@ -20,12 +20,12 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # C4389 - 'operator' : signed/unsigned mismatch.
 #
 #         TODO(sergey): Ideally should be solved, but would need to ensure
-#         this warnming happens in all compiles. But also might be rather
+#         this warning happens in all compiles. But also might be rather
 #         annoying in some places.
 #
 # C4127 - Conditional expression is constant.
 #
-#         Could be removed wqith C++17 and consexpr if().
+#         Could be removed with C++17 and consexpr if().
 #
 # C4244 - Conversion from 'type1' to 'type2', possible loss of data.
 # C4245 - Conversion from 'type1' to 'type2', signed/unsigned mismatch.

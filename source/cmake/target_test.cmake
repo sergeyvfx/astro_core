@@ -2,11 +2,11 @@
 #
 # SPDX-License-Identifier: MIT-0
 
-# Utility functions for defnining regression and unit test targets.
+# Utility functions for defining regression and unit test targets.
 
 # Define unit test target.
 #
-# The target is specified by the name of a test (without "_test" suffic) and the
+# The target is specified by the name of a test (without "_test" suffix) and the
 # file name it is compiled from. The "_test" for the target suffix will be added
 # automatically.
 #
@@ -15,7 +15,7 @@
 #
 # It is possible to pass additional linking libraries by specifying "LIBRARIES"
 # argument (the target will be linked against all libraries listed after the
-# "LIBRRAIES" keyword).
+# "LIBRARIES" keyword).
 #
 # It is possible to specify runtime command line arguments passed to the test
 # executable by using "ARGUMENTS" argument and passing all desired command line
