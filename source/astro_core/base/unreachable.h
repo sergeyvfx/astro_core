@@ -32,7 +32,7 @@
 // developer suggests that this isn't really a recoverable situation which can
 // be treated as FATAL in both release and debug builds.
 //
-// This is exactly what `UNREACHABLE()` function is taking care of:
+// This is exactly what `Unreachable()` function is taking care of:
 //
 //  - Minimized a boiler plate code of error handling caused by possible
 //    refactor (so that unexpected code is marked as such with a single function
@@ -51,12 +51,12 @@
 //       case Number::kZero: return "Cat";
 //       case Number::kOne: return "Dog";
 //     }
-//     UNREACHABLE();
+//     Unreachable();
 //   }
 //
 // NOTE: As was mentioned above the unreachable code is considered a fatal
 // unrecoverable error. If in some code it is more desirable to use some
-// fallback return value use that instead of `UNREACHABLE()`.
+// fallback return value use that instead of `Unreachable()`.
 
 #pragma once
 
@@ -109,7 +109,7 @@ namespace unreachable_intern {
 
 }  // namespace unreachable_intern
 
-[[noreturn]] inline void UNREACHABLE(
+[[noreturn]] inline void Unreachable(
     const source_location location = source_location::current()) {
   unreachable_intern::UnreachableImpl(
       location.function_name(), location.file_name(), location.line());

@@ -4,7 +4,7 @@
 
 // Semantic version of the Astro Core library.
 #define ASTRO_CORE_VERSION_MAJOR 0
-#define ASTRO_CORE_VERSION_MINOR 3
+#define ASTRO_CORE_VERSION_MINOR 4
 #define ASTRO_CORE_VERSION_REVISION 0
 
 // Release cycle of the Astro Core library:

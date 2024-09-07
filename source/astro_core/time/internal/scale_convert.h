@@ -55,7 +55,7 @@ inline auto RunConvert(const TimeScale scale, const Time& time, Args... args)
     case TimeScale::kTT:
       return Converter<TimeScale::kTT>::Convert(time, args...);
   }
-  UNREACHABLE();
+  Unreachable();
 }
 
 // Specialization of time scale conversion from kFromScale to kToScale.

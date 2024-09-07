@@ -175,7 +175,7 @@ constexpr auto DecodeClassification(const char ch) -> TLE::Classification {
     case 'S': return TLE::Classification::kSecret;
   }
 
-  UNREACHABLE();
+  Unreachable();
 }
 
 auto ParseClassification(TLE& tle, const std::string_view line) -> bool {

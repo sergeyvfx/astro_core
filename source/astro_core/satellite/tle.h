@@ -95,7 +95,7 @@ class TLE {
       case Classification::kClassified: return 'C';
       case Classification::kSecret: return 'S';
     }
-    UNREACHABLE();
+    Unreachable();
   }
 
   // Get string representation of the lines of this TLE.

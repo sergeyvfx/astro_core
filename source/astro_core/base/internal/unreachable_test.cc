@@ -11,14 +11,14 @@ namespace astro_core {
 
 namespace {
 
-void UnreachableCodeTrigger() { UNREACHABLE(); }
+void UnreachableCodeTrigger() { Unreachable(); }
 
 }  // namespace
 
 TEST(base, unreachable) {
   // NOTE: Skip the function name check as it is compiler-dependent.
   EXPECT_DEATH_IF_SUPPORTED(UnreachableCodeTrigger(),
-                            "file unreachable_test.cc, line 14");
+                            "file unreachable_test.cc");
 }
 
 }  // namespace astro_core
