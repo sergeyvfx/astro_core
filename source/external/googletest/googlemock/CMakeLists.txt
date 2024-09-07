@@ -35,7 +35,7 @@ target_include_directories(external_googlemock SYSTEM
   include
 )
 
-# Create imported library for the gmock, making it eaiser to link against.
+# Create imported library for the gmock, making it easier to link against.
 add_library(GTest::gmock INTERFACE IMPORTED GLOBAL)
 set_target_properties(GTest::gmock PROPERTIES
   INTERFACE_LINK_LIBRARIES external_googlemock

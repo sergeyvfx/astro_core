@@ -45,7 +45,7 @@ target_link_libraries(external_gflags
   Threads::Threads
 )
 
-# Create imported library for the gflags, making it eaiser to link against.
+# Create imported library for the gflags, making it easier to link against.
 add_library(gflags::gflags INTERFACE IMPORTED GLOBAL)
 set_target_properties(gflags::gflags PROPERTIES
   INTERFACE_LINK_LIBRARIES external_gflags

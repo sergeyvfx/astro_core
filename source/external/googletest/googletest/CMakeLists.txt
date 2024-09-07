@@ -49,7 +49,7 @@ target_link_libraries(external_googletest
   Threads::Threads
 )
 
-# Create imported library for the gtest, making it eaiser to link against.
+# Create imported library for the gtest, making it easier to link against.
 add_library(GTest::gtest INTERFACE IMPORTED GLOBAL)
 set_target_properties(GTest::gtest PROPERTIES
   INTERFACE_LINK_LIBRARIES external_googletest
