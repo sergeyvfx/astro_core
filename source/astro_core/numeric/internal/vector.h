@@ -36,22 +36,6 @@ namespace numeric_internal {
 
 namespace detail {
 
-// Helper to perform const-false static_assert on template instantiation to
-// provide meaningful information about why there is no template specialization
-// available.
-//
-// Example:
-//
-//   template<class T>
-//   struct MyClass {
-//     static_assert(dependent_false<T>::value,
-//                   "The operation is not supported");
-//   };
-//
-// This gives better error message than errors about unspecialized template.
-template <class Type>
-struct dependent_false : std::false_type {};
-
 // Implementation of vector cross-product for different templated sizes.
 //
 // It is only specialized for vector sizes 2 and 3 and for other sizes generates
