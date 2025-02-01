@@ -9,7 +9,7 @@
 //  - The naming follows CamelCase.
 //  - Initialization of constant vector can be done by passing values to the
 //    constructor (no stream API to put values to the vector is implemented).
-//  - No SMID vectorization.
+//  - No SIMD vectorization.
 //  - Printing is done in a row and not in a column.
 //
 // When or if this module needs to have much more sophisticated linear algebra
@@ -55,7 +55,7 @@ struct dependent_false : std::false_type {};
 // Implementation of vector cross-product for different templated sizes.
 //
 // It is only specialized for vector sizes 2 and 3 and for other sizes generates
-// a static assert message that the the operands of requested sizes are not
+// a static assert message that the operands of requested sizes are not
 // supported.
 template <size_t kLHSSize, size_t kLHS>
 struct Cross;

@@ -10,7 +10,7 @@
 //  - The naming follows CamelCase.
 //  - Initialization of constant matrix can be done by passing values to the
 //    constructor (no stream API to put values to the matrix is implemented).
-//  - No SMID vectorization.
+//  - No SIMD vectorization.
 //
 // When or if this module needs to have much more sophisticated linear algebra
 // algorithms then it is probably better to switch to Eigen.
