@@ -32,7 +32,6 @@ namespace astro_core {
 inline namespace ASTRO_CORE_VERSION_NAMESPACE {
 
 namespace numeric_internal {
-
 template <class T, size_t kNumRows, size_t kNumColumns>
 class Matrix {
   using ColumnType = std::array<T, kNumRows>;
@@ -296,12 +295,31 @@ class Matrix {
   }
 
   // Matrix-vector multiplication.
+  // Implemented with an explicit type to ease template deduction and allow
+  // multiplication by types that can be implicitly cast to a vector.
   friend inline constexpr auto operator*(const Matrix& m,
                                          const Vector<T, kNumColumns>& v)
       -> Vector<T, kNumRows> {
     Vector<T, kNumRows> result;
     Unroll<kNumRows>([&](const auto i) {
       result(i) = T{0};
+      Unroll<kNumColumns>([&](const auto j) { result(i) += m(i, j) * v(j); });
+    });
+    return result;
+  }
+
+  // Matrix-vector multiplication with a vector of elements of a different type.
+  // For example, multiply matrix of floating point values by a vector of
+  // complex values.
+  template <class U>
+  friend inline constexpr auto operator*(const Matrix& m,
+                                         const Vector<U, kNumColumns>& v) {
+    using ResultElementType = decltype(std::declval<T>() * std::declval<U>() +
+                                       std::declval<T>() * std::declval<U>());
+
+    Vector<ResultElementType, kNumRows> result;
+    Unroll<kNumRows>([&](const auto i) {
+      result(i) = ResultElementType{0};
       Unroll<kNumColumns>([&](const auto j) { result(i) += m(i, j) * v(j); });
     });
     return result;
@@ -316,10 +334,59 @@ class Matrix {
   //   (1 2 3)^T = (1 4)
   //   (4 5 6)     (2 5)
   //               (3 6)
-  constexpr inline auto Transposed() const -> Matrix<T, kNumColumns, kNumRows> {
+  [[nodiscard]] constexpr inline auto Transposed() const
+      -> Matrix<T, kNumColumns, kNumRows> {
     Matrix<T, kNumColumns, kNumRows> result;
     Unroll<kNumColumns, kNumRows>([&](const auto column, const auto row) {
       result(column, row) = (*this)(row, column);
+    });
+    return result;
+  }
+
+  // Construct new matrix from this one by reversing the order of rows.
+  //
+  // The behavior of this function is the same as Numpy's and Matlab's
+  // flipud() for 2D arrays. For Eigen it is mat.rowwise().reverse().
+  [[nodiscard]] constexpr inline auto WithReversedRows() const -> Matrix {
+    Matrix result;
+    Unroll<kNumColumns>([&](const auto column) {
+      Unroll<kNumRows>([&](const auto dst_row) {
+        const size_t src_row = kNumRows - dst_row - 1;
+        result(dst_row, column) = data_[column][src_row];
+      });
+    });
+    return result;
+  }
+
+  // Construct new matrix from this one by reversing the order of columns.
+  //
+  // The behavior of this function is the same as Numpy's and Matlab's
+  // fliplr() for 2D arrays. For Eigen it is mat.colwise().reverse().
+  [[nodiscard]] constexpr inline auto WithReversedColumns() const -> Matrix {
+    Matrix result;
+    Unroll<kNumColumns>([&](const auto dst_column) {
+      Unroll<kNumRows>([&](const auto row) {
+        const size_t src_column = kNumColumns - dst_column - 1;
+        result(row, dst_column) = data_[src_column][row];
+      });
+    });
+    return result;
+  }
+
+  // Construct new matrix from this one by reversing the order of rows and
+  // columns.
+  // This is the same as calling WithReversedRows().WithReversedColumns() but
+  // more efficient.
+  // The behavior of this function is the same as Numpy's flip*( Eigen's
+  // reverse().
+  [[nodiscard]] constexpr inline auto Reversed() const -> Matrix {
+    Matrix result;
+    Unroll<kNumColumns>([&](const auto dst_column) {
+      Unroll<kNumRows>([&](const auto dst_row) {
+        const size_t src_row = kNumRows - dst_row - 1;
+        const size_t src_column = kNumColumns - dst_column - 1;
+        result(dst_row, dst_column) = data_[src_column][src_row];
+      });
     });
     return result;
   }
@@ -345,6 +412,13 @@ class Matrix {
  private:
   MatrixType data_{};
 };
+
+namespace detail {
+
+template <class T, size_t kNumRows, size_t kNumColumns>
+struct IsMatrix<Matrix<T, kNumRows, kNumColumns>> : std::true_type {};
+
+}  // namespace detail
 
 }  // namespace numeric_internal
 

@@ -4,6 +4,7 @@
 
 #include "astro_core/numeric/internal/matrix.h"
 
+#include <complex>
 #include <sstream>
 
 #include "astro_core/unittest/mock.h"
@@ -21,6 +22,7 @@ using Vec2i = Vector<int, 2>;
 using Vec3i = Vector<int, 3>;
 
 using Mat2x3i = Matrix<int, 2, 3>;
+using Mat2x4i = Matrix<int, 2, 4>;
 
 using Mat3i = Matrix<int, 3, 3>;
 using Mat3x2i = Matrix<int, 3, 2>;
@@ -28,6 +30,10 @@ using Mat3x4i = Matrix<int, 3, 4>;
 
 using Mat5x3i = Matrix<int, 5, 3>;
 using Mat5x4i = Matrix<int, 5, 4>;
+
+using Cpli = std::complex<int>;
+using VecCpl2i = Vector<Cpli, 2>;
+using VecCpl3i = Vector<Cpli, 3>;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructor.
@@ -157,11 +163,21 @@ TEST(Matrix, BinaryDivideByScalar) {
 }
 
 TEST(Matrix, RightMatrixByVectorMultiplication) {
-  EXPECT_EQ(Mat2x3i::FromRows({
-                {1, 2, 3},
-                {4, 5, 6},
-            }) * Vec3i({1, 2, 3}),
-            Vec2i({14, 32}));
+  {
+    EXPECT_EQ(Mat2x3i::FromRows({
+                  {1, 2, 3},
+                  {4, 5, 6},
+              }) * Vec3i({1, 2, 3}),
+              Vec2i({14, 32}));
+  }
+
+  {
+    EXPECT_EQ(Mat2x3i::FromRows({
+                  {1, 2, 3},
+                  {4, 5, 6},
+              }) * VecCpl3i({1, 2, 3}),
+              VecCpl2i({14, 32}));
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -173,6 +189,59 @@ TEST(Matrix, Transposed) {
 
   EXPECT_EQ(Mat3i::FromRows({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}).Transposed(),
             Mat3i::FromColumns({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}));
+}
+
+TEST(Matrix, WithReversedRows) {
+  // >>> import numpy as np
+  // >>> np.flipud(np.array([[1,2,3], [4,5,6]]))
+  // array([[4, 5, 6],
+  //        [1, 2, 3]])
+  EXPECT_EQ(Mat2x3i::FromRows({{1, 2, 3}, {4, 5, 6}}).WithReversedRows(),
+            Mat2x3i::FromRows({{4, 5, 6}, {1, 2, 3}}));
+
+  // >>> import numpy as np
+  // >>> np.flipud(np.array([[1,2,3], [4,5,6], [7,8,9]]))
+  // array([[7, 8, 9],
+  //        [4, 5, 6],
+  //        [1, 2, 3]])
+  EXPECT_EQ(
+      Mat3i::FromRows({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}).WithReversedRows(),
+      Mat3i::FromRows({{7, 8, 9}, {4, 5, 6}, {1, 2, 3}}));
+}
+
+TEST(Matrix, WithReversedColumns) {
+  // >>> import numpy as np
+  // >>> np.fliplr(np.array([[1,2,3], [4,5,6]]))
+  // array([[3, 2, 1],
+  //        [6, 5, 4]])
+  EXPECT_EQ(Mat2x3i::FromRows({{1, 2, 3}, {4, 5, 6}}).WithReversedColumns(),
+            Mat2x3i::FromRows({{3, 2, 1}, {6, 5, 4}}));
+
+  // >>> import numpy as np
+  // >>> np.fliplr(np.array([[1,2,3,4], [5,6,7,8]]))
+  // array([[4, 3, 2, 1],
+  //        [8, 7, 6, 5]])
+  EXPECT_EQ(
+      Mat2x4i::FromRows({{1, 2, 3, 4}, {5, 6, 7, 8}}).WithReversedColumns(),
+      Mat2x4i::FromRows({{4, 3, 2, 1}, {8, 7, 6, 5}}));
+}
+
+TEST(Matrix, Reversed) {
+  // >>> import numpy as np
+  // >>> np.flipud(np.fliplr(np.array([[1,2,3], [4,5,6]])))
+  // array([[6, 5, 4],
+  //        [3, 2, 1]])
+  EXPECT_EQ(Mat2x3i::FromRows({{1, 2, 3}, {4, 5, 6}}).Reversed(),
+            Mat2x3i::FromRows({{6, 5, 4}, {3, 2, 1}}));
+
+  // >>> import numpy as np
+  // >>> np.flipud(np.fliplr(np.array([[1,2,3,4], [5,6,7,8], [9,10,11,12]])))
+  // array([[12, 11, 10,  9],
+  //        [ 8,  7,  6,  5],
+  //        [ 4,  3,  2,  1]])
+  EXPECT_EQ(Mat3x4i::FromRows({{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}})
+                .Reversed(),
+            Mat3x4i::FromRows({{12, 11, 10, 9}, {8, 7, 6, 5}, {4, 3, 2, 1}}));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -18,6 +18,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <cstddef>
 #include <ostream>
 #include <span>
@@ -35,6 +36,13 @@ inline namespace ASTRO_CORE_VERSION_NAMESPACE {
 namespace numeric_internal {
 
 namespace detail {
+
+// IsMatrix<T>::value will be true if the T is a Matrix type.
+template <class T>
+struct IsMatrix : std::false_type {};
+
+template <class T>
+concept LegalMultiplicationType = std::negation_v<IsMatrix<T>>;
 
 // Implementation of vector cross-product for different templated sizes.
 //
@@ -80,6 +88,10 @@ class Vector {
   // an uninitialized state if T is not a class.
   Vector() = default;
 
+  // Copy and move constructor,
+  Vector(const Vector& other) = default;
+  Vector(Vector&& other) noexcept = default;
+
   // Construct vector with the given values.
   //
   // The number of values should be less of equal to the vector size. The
@@ -91,6 +103,26 @@ class Vector {
   template <class... Types,
             std::enable_if_t<(N > 1) && sizeof...(Types) == N, int> = 0>
   constexpr inline Vector(Types... s) : data_{static_cast<T>(s)...} {}
+
+  // Construct vector from potentially a different type.
+  // It explicitly constructs elements of type T from elements of the given
+  // vector.
+  template <class U>
+  explicit constexpr inline Vector(const Vector<U, N>& other) {
+    Unroll<N>([&](const auto i) { data_[i] = T(other(i)); });
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Type conversion.
+
+  // Construct new vector with elements of type U assigned from the elements of
+  // this vector.
+  template <class U>
+  inline auto Cast() const -> Vector<U, N> {
+    Vector<U, N> result;
+    Unroll<N>([&](const auto i) { result(i) = U(data_[i]); });
+    return result;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Shape.
@@ -113,9 +145,11 @@ class Vector {
   // Return a reference to the element at specified location pos.
   // No bounds checking is performed.
   constexpr inline auto operator()(const size_t pos) -> T& {
+    assert(pos < N);
     return data_[pos];
   }
   constexpr inline auto operator()(const size_t pos) const -> const T& {
+    assert(pos < N);
     return data_[pos];
   }
 
@@ -133,10 +167,17 @@ class Vector {
     return true;
   }
 
+  // Check the vectors do not match exactly.
   friend constexpr inline auto operator!=(const Vector& lhs,
                                           const Vector& rhs) {
     return !(lhs == rhs);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Assignment.
+
+  auto operator=(const Vector& other) -> Vector& = default;
+  auto operator=(Vector&& other) -> Vector& = default;
 
   //////////////////////////////////////////////////////////////////////////////
   // Mathematical operations.
@@ -161,6 +202,9 @@ class Vector {
   }
 
   // Multiply the vector by a scalar.
+  //
+  // It is a per-element multiplication of this vector by the operand. It does
+  // an explicit cast of the multiplication result to T.
   template <class OtherScalarType>
   constexpr inline auto operator*=(const OtherScalarType& rhs) -> Vector& {
     Unroll<N>([&](const auto i) { data_[i] = T(data_[i] * rhs); });
@@ -168,22 +212,38 @@ class Vector {
   }
 
   // Divide the vector by a scalar.
+  //
+  // It is a per-element division of this vector by the operand. It does an
+  // explicit cast of the division result to T.
   template <class OtherScalarType>
   constexpr inline auto operator/=(const OtherScalarType& rhs) -> Vector& {
     Unroll<N>([&](const auto i) { data_[i] = T(data_[i] / rhs); });
     return *this;
   }
 
-  // Add two vectors.
+  // Add two vectors of the same type.
   // This is a per-element sum.
   friend inline constexpr auto operator+(const Vector& lhs, const Vector& rhs)
       -> Vector {
-    Vector result{lhs};
-    result += rhs;
+    Vector result;
+    Unroll<N>(
+        [&](const auto i) { result.data_[i] = lhs.data_[i] + rhs.data_[i]; });
     return result;
   }
 
-  // Subtract rhs vector from lhs vector.
+  // Add two vectors with elements of different type.
+  // The result has element type deducted from the operator between T and U.
+  // This is a per-element sum.
+  template <class U>
+  friend inline constexpr auto operator+(const Vector& lhs,
+                                         const Vector<U, N>& rhs) {
+    using V = decltype(std::declval<T>() + std::declval<U>());
+    Vector<V, N> result;
+    Unroll<N>([&](const auto i) { result(i) = lhs.data_[i] + rhs(i); });
+    return result;
+  }
+
+  // Subtract rhs vector from lhs vector. The vectors are the same type.
   // This is a per-element difference.
   friend inline constexpr auto operator-(const Vector& lhs, const Vector& rhs)
       -> Vector {
@@ -192,33 +252,54 @@ class Vector {
     return result;
   }
 
+  // Subtract rhs vector from lhs vector. The vectors have different element
+  // type. The result has element type deducted from the operator between T and
+  // U.
+  // This is a per-element difference.
+  template <class U>
+  friend inline constexpr auto operator-(const Vector& lhs,
+                                         const Vector<U, N>& rhs) {
+    using V = decltype(std::declval<T>() + std::declval<U>());
+    Vector<V, N> result;
+    Unroll<N>([&](const auto i) { result(i) = lhs.data_[i] - rhs(i); });
+    return result;
+  }
+
   // Multiply vector by a scalar.
-  // Multiplies every element of the vector by the scalar.
+  // Multiplies every element of the vector by the scalar. The element type of
+  // the result is deducted from the operation.
   template <class OtherScalarType>
+    requires detail::LegalMultiplicationType<OtherScalarType>
   friend inline constexpr auto operator*(const Vector& lhs,
-                                         const OtherScalarType& rhs) -> Vector {
-    Vector result{lhs};
-    result *= rhs;
+                                         const OtherScalarType& rhs) {
+    using U = decltype(std::declval<T>() * std::declval<OtherScalarType>());
+    Vector<U, N> result;
+    Unroll<N>([&](const auto i) { result(i) = lhs.data_[i] * rhs; });
     return result;
   }
 
   // Multiply scalar by vector.
-  // Multiplies every element of the vector by the scalar.
+  // Multiplies every element of the vector by the scalar. The element type of
+  // the result is deducted from the operation.
   template <class OtherScalarType>
+    requires detail::LegalMultiplicationType<OtherScalarType>
   friend inline constexpr auto operator*(const OtherScalarType& lhs,
-                                         const Vector& rhs) -> Vector {
-    Vector result{rhs};
-    result *= lhs;
+                                         const Vector& rhs) {
+    using U = decltype(std::declval<T>() * std::declval<OtherScalarType>());
+    Vector<U, N> result;
+    Unroll<N>([&](const auto i) { result(i) = lhs * rhs.data_[i]; });
     return result;
   }
 
   // Divide vector by a scalar.
-  // Divides every element of the vector by the scalar.
+  // Divides every element of the vector by the scalar. The element type of
+  // the result is deducted from the operation.
   template <class OtherScalarType>
   friend inline constexpr auto operator/(const Vector& lhs,
-                                         const OtherScalarType& rhs) -> Vector {
-    Vector result{lhs};
-    result /= rhs;
+                                         const OtherScalarType& rhs) {
+    using U = decltype(std::declval<T>() / std::declval<OtherScalarType>());
+    Vector<U, N> result;
+    Unroll<N>([&](const auto i) { result(i) = lhs.data_[i] / rhs; });
     return result;
   }
 
@@ -241,15 +322,18 @@ class Vector {
   // Only implemented for vector sizes of 2 and 3.
   // If one of the vectors has size 3 then the result is vector od size 3.
   // If Both vectors have size 2 then the output is a scalar.
-  template <size_t kRHSSize>
-  constexpr inline auto Cross(const Vector<T, kRHSSize>& rhs) const {
+  template <class U, size_t kRHSSize>
+  constexpr inline auto Cross(const Vector<U, kRHSSize>& rhs) const {
     return detail::Cross<N, kRHSSize>::Calculate(*this, rhs);
   }
 
   // Calculate dot-product between this vector and given right hand side vector.
-  constexpr inline auto Dot(const Vector& rhs) const -> T {
-    T dot_product{};
-    Unroll<N>([&](const auto i) { dot_product += data_[i] * rhs.data_[i]; });
+  template <class U>
+  constexpr inline auto Dot(const Vector<U, N>& rhs) const {
+    using V = decltype(std::declval<T>() * std::declval<U>() +
+                       std::declval<T>() * std::declval<U>());
+    V dot_product{};
+    Unroll<N>([&](const auto i) { dot_product += data_[i] * rhs(i); });
     return dot_product;
   }
 
